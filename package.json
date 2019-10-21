@@ -9,7 +9,9 @@
   "author": "Gapur Kassym",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "morgan": "^1.9.1",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "eslint": "^6.5.1",
