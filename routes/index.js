@@ -7,5 +7,7 @@ router.get('/', (req, res) => {
 });
 
 router.use('/dishes', require('./dishes'));
+router.use('/promotions', require('./promotions'));
+router.use('/leaders', require('./leaders'));
 
 module.exports = router;

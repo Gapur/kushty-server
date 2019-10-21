@@ -19,22 +19,22 @@ router.delete('/', (req, res, next) => {
   res.end('Deleting all dishes');
 });
 
-router.get('/:dishId', (req, res, next) => {
-  res.end(`Will send details of the dish: ${req.params.dishId} to you!`);
+router.get('/:id', (req, res, next) => {
+  res.end(`Will send details of the dish: ${req.params.id} to you!`);
 });
 
-router.post('/:dishId', (req, res, next) => {
+router.post('/:id', (req, res, next) => {
   res.statusCode = 403;
-  res.end(`POST operation not supported on /dishes/${req.params.dishId}`);
+  res.end(`POST operation not supported on /dishes/${req.params.id}`);
 });
 
-router.put('/:dishId', (req, res, next) => {
-  res.write(`Updating the dish: ${req.params.dishId}\n`);
+router.put('/:id', (req, res, next) => {
+  res.write(`Updating the dish: ${req.params.id}\n`);
   res.end(`Will update the dish: ${req.body.name} with details: ${req.body.description}`);
 });
 
-router.delete('/:dishId', (req, res, next) => {
-  res.end(`Deleting dish: ${req.params.dishId}`);
+router.delete('/:id', (req, res, next) => {
+  res.end(`Deleting dish: ${req.params.id}`);
 });
 
 module.exports = router;
