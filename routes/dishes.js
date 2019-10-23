@@ -1,13 +1,28 @@
 const express = require('express');
 
+const Dishes = require('../models/dishes');
+
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-  res.end('Will send all the dishes to you!');
+  Dishes.find({})
+    .then((dishes) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(dishes);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 router.post('/', (req, res, next) => {
-  res.end(`Will add the dish: ${req.body.name} with details: ${req.body.description}`);
+  Dishes.create(req.body)
+    .then((dish) => {
+      console.log('Dish Created ', dish);
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(dish);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 router.put('/', (req, res, next) => {
@@ -16,11 +31,23 @@ router.put('/', (req, res, next) => {
 });
 
 router.delete('/', (req, res, next) => {
-  res.end('Deleting all dishes');
+  Dishes.remove({})
+    .then((resp) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(resp);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 router.get('/:id', (req, res, next) => {
-  res.end(`Will send details of the dish: ${req.params.id} to you!`);
+  Dishes.findById(req.params.id)
+    .then((dish) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(dish);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 router.post('/:id', (req, res, next) => {
@@ -29,12 +56,25 @@ router.post('/:id', (req, res, next) => {
 });
 
 router.put('/:id', (req, res, next) => {
-  res.write(`Updating the dish: ${req.params.id}\n`);
-  res.end(`Will update the dish: ${req.body.name} with details: ${req.body.description}`);
+  Dishes.findByIdAndUpdate(req.params.dishId, {
+    $set: req.body,
+  }, { new: true })
+    .then((dish) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(dish);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 router.delete('/:id', (req, res, next) => {
-  res.end(`Deleting dish: ${req.params.id}`);
+  Dishes.findByIdAndRemove(req.params.dishId)
+    .then((resp) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(resp);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 module.exports = router;

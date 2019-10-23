@@ -1,11 +1,19 @@
 const express = require('express');
 const http = require('http');
 const morgan = require('morgan');
+const mongoose = require('mongoose');
 
 const hostname = 'localhost';
 const port = 3000;
 
 const app = express();
+
+const url = 'mongodb://localhost:27017/kushty_dev';
+const connect = mongoose.connect(url);
+
+connect.then((db) => {
+  console.log('Connected correctly to server');
+}, (err) => console.log(err));
 
 const morganFormat = app.get('env') === 'development' ? 'dev' : 'combined';
 app.use(morgan(morganFormat, {
