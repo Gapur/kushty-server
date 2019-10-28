@@ -1,13 +1,28 @@
 const express = require('express');
 
+const Promotions = require('../models/promotions');
+
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-  res.end('Will send all the promotions to you!');
+  Promotions.find({})
+    .then((promotions) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(promotions);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 router.post('/', (req, res, next) => {
-  res.end(`Will add the promotion: ${req.body.name} with details: ${req.body.description}`);
+  Promotions.create(req.body)
+    .then((promotion) => {
+      console.log('Promotion Created ', promotion);
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(promotion);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 router.put('/', (req, res, next) => {
@@ -16,11 +31,23 @@ router.put('/', (req, res, next) => {
 });
 
 router.delete('/', (req, res, next) => {
-  res.end('Deleting all promotions');
+  Promotions.remove({})
+    .then((promotion) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(promotion);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 router.get('/:id', (req, res, next) => {
-  res.end(`Will send details of the promotion: ${req.params.id} to you!`);
+  Promotions.findById(req.params.id)
+    .then((promotion) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(promotion);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 router.post('/:id', (req, res, next) => {
@@ -29,12 +56,25 @@ router.post('/:id', (req, res, next) => {
 });
 
 router.put('/:id', (req, res, next) => {
-  res.write(`Updating the promotion: ${req.params.id}\n`);
-  res.end(`Will update the promotion: ${req.body.name} with details: ${req.body.description}`);
+  Promotions.findByIdAndUpdate(req.params.id, {
+    $set: req.body,
+  }, { new: true })
+    .then((promotion) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(promotion);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 router.delete('/:id', (req, res, next) => {
-  res.end(`Deleting promotion: ${req.params.id}`);
+  Promotions.findByIdAndRemove(req.params.id)
+    .then((promotion) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(promotion);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 module.exports = router;
