@@ -3,6 +3,8 @@ const http = require('http');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 
 const config = require('./config');
 
@@ -27,6 +29,14 @@ app.use(morgan(morganFormat, {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use(session({
+  name: 'session-id',
+  secret: config.secretKey,
+  saveUninitialized: false,
+  resave: false,
+  store: new FileStore(),
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
