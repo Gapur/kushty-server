@@ -16,7 +16,7 @@ router.get('/', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.post('/', authenticate.verifyUser, (req, res, next) => {
+router.post('/', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   Dishes.create(req.body)
     .then((dish) => {
       console.log('Dish Created ', dish);
@@ -27,12 +27,12 @@ router.post('/', authenticate.verifyUser, (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.put('/', authenticate.verifyUser, (req, res, next) => {
+router.put('/', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   res.statusCode = 403;
   res.end('PUT operation not supported on /dishes');
 });
 
-router.delete('/', authenticate.verifyUser, (req, res, next) => {
+router.delete('/', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   Dishes.remove({})
     .then((resp) => {
       res.statusCode = 200;
@@ -53,12 +53,12 @@ router.get('/:id', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.post('/:id', authenticate.verifyUser, (req, res, next) => {
+router.post('/:id', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   res.statusCode = 403;
   res.end(`POST operation not supported on /dishes/${req.params.id}`);
 });
 
-router.put('/:id', authenticate.verifyUser, (req, res, next) => {
+router.put('/:id', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   Dishes.findByIdAndUpdate(req.params.id, {
     $set: req.body,
   }, { new: true })
@@ -70,7 +70,7 @@ router.put('/:id', authenticate.verifyUser, (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.delete('/:id', authenticate.verifyUser, (req, res, next) => {
+router.delete('/:id', authenticate.verifyAdmin, authenticate.verifyUser, (req, res, next) => {
   Dishes.findByIdAndRemove(req.params.id)
     .then((resp) => {
       res.statusCode = 200;
@@ -127,7 +127,7 @@ router.put('/:id/comments', authenticate.verifyUser, (req, res, next) => {
   res.end(`PUT operation not supported on /dishes/${req.params.id}/comments`);
 });
 
-router.delete('/:id/comments', authenticate.verifyUser, (req, res, next) => {
+router.delete('/:id/comments', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   Dishes.findById(req.params.id)
     .then((dish) => {
       if (dish != null) {
