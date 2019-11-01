@@ -1,6 +1,7 @@
 const express = require('express');
 
 const Leaders = require('../models/leaders');
+const authenticate = require('../authenticate');
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get('/', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   Leaders.create(req.body)
     .then((leader) => {
       console.log('Leader Created ', leader);
@@ -25,12 +26,12 @@ router.post('/', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.put('/', (req, res, next) => {
+router.put('/', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   res.statusCode = 403;
   res.end('PUT operation not supported on /leaders');
 });
 
-router.delete('/', (req, res, next) => {
+router.delete('/', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   Leaders.remove({})
     .then((leader) => {
       res.statusCode = 200;
@@ -50,12 +51,12 @@ router.get('/:id', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.post('/:id', (req, res, next) => {
+router.post('/:id', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   res.statusCode = 403;
   res.end(`POST operation not supported on /leaders/${req.params.id}`);
 });
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   Leaders.findByIdAndUpdate(req.params.id, {
     $set: req.body,
   }, { new: true })
@@ -67,7 +68,7 @@ router.put('/:id', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   Leaders.findByIdAndRemove(req.params.id)
     .then((leader) => {
       res.statusCode = 200;
