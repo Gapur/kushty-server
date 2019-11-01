@@ -6,6 +6,16 @@ const authenticate = require('../authenticate');
 
 const router = express.Router();
 
+router.get('/', authenticate.verifyAdmin, (req, res, next) => {
+  Users.find({})
+    .then((users) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(users);
+    }, (err) => next(err))
+    .catch((err) => next(err));
+});
+
 router.post('/signup', (req, res, next) => {
   Users.register({ username: req.body.username },
     req.body.password, (err, user) => {
