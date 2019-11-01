@@ -1,9 +1,11 @@
 const express = require('express');
+const mongoose = require('mongoose');
 
 const Dishes = require('../models/dishes');
 const authenticate = require('../authenticate');
 
 const router = express.Router();
+const { ObjectId } = mongoose.Types;
 
 router.get('/', (req, res, next) => {
   Dishes.find({})
@@ -177,8 +179,16 @@ router.post('/:id/comments/:commentId', authenticate.verifyUser, (req, res, next
 
 router.put('/:id/comments/:commentId', authenticate.verifyUser, (req, res, next) => {
   Dishes.findById(req.params.id)
+    .populate('comments.author')
     .then((dish) => {
       if (dish != null && dish.comments.id(req.params.commentId) != null) {
+        const id1 = ObjectId(dish.comments.id(req.params.commentId).author._id);
+        const id2 = ObjectId(req.user._id);
+        if (dish && !id1.equals(id2)) {
+          const err = new Error('Any user or an Admin cannot update or delete the comment posted by other users!');
+          err.status = 403;
+          return next(err);
+        }
         if (req.body.rating) {
           dish.comments.id(req.params.commentId).rating = req.body.rating;
         }
@@ -210,8 +220,16 @@ router.put('/:id/comments/:commentId', authenticate.verifyUser, (req, res, next)
 
 router.delete('/:id/comments/:commentId', authenticate.verifyUser, (req, res, next) => {
   Dishes.findById(req.params.id)
+    .populate('comments.author')
     .then((dish) => {
       if (dish != null && dish.comments.id(req.params.commentId) != null) {
+        const id1 = ObjectId(dish.comments.id(req.params.commentId).author._id);
+        const id2 = ObjectId(req.user._id);
+        if (dish && !id1.equals(id2)) {
+          const err = new Error('Any user or an Admin cannot update or delete the comment posted by other users!');
+          err.status = 403;
+          return next(err);
+        }
         dish.comments.id(req.params.commentId).remove();
         dish.save()
           .then((savedDish) => {
