@@ -41,24 +41,57 @@ router.delete('/', authenticate.verifyUser, (req, res, next) => {
 });
 
 router.post('/:dishId', authenticate.verifyUser, (req, res, next) => {
-  Favorites.findOne({ user: req.user._id, dishes: { $nin: [req.params.dishId] } })
+  Favorites.findOne({ user: req.user._id })
     .then((favorite) => {
-      if (favorite != null) {
-        favorite.dishes.push(req.params.dishId);
-        favorite.save()
-          .then((updatedFavorite) => {
-            Favorites.findById(updatedFavorite._id)
-              .populate('user', 'dishes')
-              .then((newFavorites) => {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(newFavorites);
-              });
-          }, (err) => next(err));
-      } else {
+      if (favorite == null) {
+        const err = new Error('You don\' have favorites');
+        return next(err);
+      }
+
+      if (favorite.dishes.some((id) => ObjectId(id).equals(req.params.dishId))) {
         const err = new Error(`Dish ${req.params.dishId} is already exist in favorites`);
         return next(err);
       }
+
+      favorite.dishes.push(req.params.dishId);
+      favorite.save()
+        .then((updatedFavorite) => {
+          Favorites.findById(updatedFavorite._id)
+            .populate('user', 'dishes')
+            .then((newFavorites) => {
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.json(newFavorites);
+            });
+        }, (err) => next(err));
+    }, (err) => next(err))
+    .catch((err) => next(err));
+});
+
+router.delete('/:dishId', authenticate.verifyUser, (req, res, next) => {
+  Favorites.findOne({ user: req.user._id })
+    .then((favorite) => {
+      if (favorite == null) {
+        const err = new Error('You don\' have favorites');
+        return next(err);
+      }
+
+      if (!favorite.dishes.some((id) => ObjectId(id).equals(req.params.dishId))) {
+        const err = new Error(`You don't have ${req.params.dishId} in your favorites`);
+        return next(err);
+      }
+
+      favorite.dishes.remove(req.params.dishId);
+      favorite.save()
+        .then((updatedFavorite) => {
+          Favorites.findById(updatedFavorite._id)
+            .populate('user', 'dishes')
+            .then((newFavorites) => {
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.json(newFavorites);
+            });
+        }, (err) => next(err));
     }, (err) => next(err))
     .catch((err) => next(err));
 });
