@@ -10,5 +10,6 @@ router.use('/dishes', require('./dishes'));
 router.use('/promotions', require('./promotions'));
 router.use('/leaders', require('./leaders'));
 router.use('/users', require('./users'));
+router.use('/favorites', require('./favorites'));
 
 module.exports = router;

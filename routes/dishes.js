@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const Dishes = require('../models/dishes');
+const { Dishes } = require('../models/dishes');
 const authenticate = require('../authenticate');
 
 const router = express.Router();
