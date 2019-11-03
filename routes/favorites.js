@@ -8,12 +8,12 @@ const router = express.Router();
 const { ObjectId } = mongoose.Types;
 
 router.get('/', (req, res, next) => {
-  Favorites.find({})
+  Favorites.findOne({ user: req.user._id })
     .populate('user', 'dishes')
-    .then((favorites) => {
+    .then((favorite) => {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
-      res.json(favorites);
+      res.json(favorite);
     }, (err) => next(err))
     .catch((err) => next(err));
 });
