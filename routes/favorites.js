@@ -40,4 +40,27 @@ router.delete('/', authenticate.verifyUser, (req, res, next) => {
     .catch((err) => next(err));
 });
 
+router.post('/:dishId', authenticate.verifyUser, (req, res, next) => {
+  Favorites.findOne({ user: req.user._id, dishes: { $nin: [req.params.dishId] } })
+    .then((favorite) => {
+      if (favorite != null) {
+        favorite.dishes.push(req.params.dishId);
+        favorite.save()
+          .then((updatedFavorite) => {
+            Favorites.findById(updatedFavorite._id)
+              .populate('user', 'dishes')
+              .then((newFavorites) => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(newFavorites);
+              });
+          }, (err) => next(err));
+      } else {
+        const err = new Error(`Dish ${req.params.dishId} is already exist in favorites`);
+        return next(err);
+      }
+    }, (err) => next(err))
+    .catch((err) => next(err));
+});
+
 module.exports = router;
